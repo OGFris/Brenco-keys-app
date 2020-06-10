@@ -68,9 +68,10 @@ class _HomePageState extends State<HomePage> {
                     'Remove',
                   ),
                   onPressed: () {
-                    api.removeKey(_selectedKeys[0].id).then((res) {
+                    api.removeKey(_selectedKeys[0].id).then((_) {
                       setState(() {
                         _selectedKeys = [];
+                        futureKeys = api.fetchKeys();
                       });
                     }).catchError((error) {
                       print(error);
@@ -145,11 +146,11 @@ class _HomePageState extends State<HomePage> {
                             rows: snapshot.data
                                 .map(
                                   (LicenseKey.Key key) => DataRow(
-                                    /*selected:
-                                            _selectedProducts.contains(product),
+                                    selected:
+                                            _selectedKeys.contains(key),
                                         onSelectChanged: (selected) {
-                                          _onSelectedRow(selected, product);
-                                        },*/
+                                          _onSelectedRow(selected, key);
+                                        },
                                     cells: [
                                       DataCell(
                                         Text(
@@ -253,7 +254,10 @@ class _HomePageState extends State<HomePage> {
                               ),
                               onPressed: () {
                                 if (_nameController.text.isNotEmpty) {
-                                  api.createKey(_nameController.text).then((_) {
+                                  api.createKey(_nameController.text).then((result) {
+                                    setState(() {
+                                      futureKeys = api.fetchKeys();
+                                    });
                                     Navigator.pop(context);
                                     _nameController.clear();
                                   }).catchError((error) {
@@ -277,5 +281,15 @@ class _HomePageState extends State<HomePage> {
             ),
           );
         });
+  }
+
+  void _onSelectedRow(bool selected, LicenseKey.Key key) async {
+    setState(() {
+      if (selected) {
+        _selectedKeys.add(key);
+      } else {
+        _selectedKeys.remove(key);
+      }
+    });
   }
 }

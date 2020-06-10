@@ -28,8 +28,10 @@ class API {
 
   Future<bool> createKey(String name) async {
     final response = await client.post("$BASE_URL/api/keys/create", body: {
-      name: name,
+      "name": name,
     });
+
+    print(response.body);
 
     if (response.statusCode == 200) {
       return true;
